@@ -7,7 +7,7 @@ export const userApi = createApi({
     tagTypes: [],
     endpoints: (builder) => {
         return {
-            createContact: builder.mutation<CONTACT_CREATE_RESPONCE, void>({
+            createContact: builder.mutation<CONTACT_CREATE_RESPONCE, CONTACT_CREATE_REQUEST>({
                 query: userData => {
                     return {
                         url: "/create-contact",

@@ -1,17 +1,34 @@
 "use client"
 
-import { useCreatAboutMutation, useGetaboutQuery, useUpdateAboutMutation } from '@/redux/api/admin.api'
+import { useGetaboutQuery, useUpdateAboutMutation } from '@/redux/api/admin.api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import clsx from 'clsx'
 import { format } from 'date-fns'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import z from 'zod'
-
+type ProfileFormValues = {
+    name: string
+    title: string
+    bio: string
+    journey: string
+    currentWork: string
+    dob: string
+    location: string
+    email: string
+    phone: string
+    language: string
+    profileImg?: FileList
+}
+const optionalFileList = z.any().refine(
+    (files) => !files || files.length === 0 || files[0] instanceof File,
+    "Invalid file"
+)
 const About = () => {
     const { data } = useGetaboutQuery()
-    const [aboutUpdate] = useUpdateAboutMutation()
+    const [aboutUpdate, { isLoading: isProfileUpdating }] = useUpdateAboutMutation()
+    const [showProfilePicInput, setShowProfilePicInput] = useState(false)
     const expSchma = z.object({
         name: z.string().min(1),
         title: z.string().min(1),
@@ -23,10 +40,10 @@ const About = () => {
         email: z.string().min(1),
         phone: z.string().min(1),
         language: z.string().min(1),
-        profileImg: z.string().min(1),
-    }) satisfies z.ZodType<UPDATE_ABOUT_REQUEST>
+        profileImg: optionalFileList.optional(),
+    }) satisfies z.ZodType<ProfileFormValues>
 
-    const { register, reset, handleSubmit, formState: { errors, touchedFields } } = useForm<UPDATE_ABOUT_REQUEST>({
+    const { register, reset, handleSubmit, setValue, formState: { errors, touchedFields } } = useForm<ProfileFormValues>({
         resolver: zodResolver(expSchma),
         defaultValues: {
             name: "",
@@ -38,13 +55,46 @@ const About = () => {
             location: "",
             email: "",
             phone: "",
-            language: "",
-            profileImg: "" ,
+            language: ""
+
         },
     })
-    const handleabout = async (updateData: UPDATE_ABOUT_REQUEST) => {
+    useEffect(() => {
+        if (!data?.result) return
+        reset({
+            name: data.result.name ?? "",
+            title: data.result.title ?? "",
+            bio: data.result.bio ?? "",
+            journey: data.result.journey ?? "",
+            currentWork: data.result.currentWork ?? "",
+            dob: data.result.dob ?? "",
+            location: data.result.location ?? "",
+            email: data.result.email ?? "",
+            phone: data.result.phone ?? "",
+            language: data.result.language ?? "",
+        })
+        setValue("profileImg", undefined)
+        setShowProfilePicInput(false)
+    }, [data, reset, setValue])
+    const handleabout = async (data: ProfileFormValues) => {
+
         try {
-            await aboutUpdate({ ...updateData, _id: data?.result._id }).unwrap()
+            const fd = new FormData()
+            fd.append("name", data.name.trim())
+            fd.append("title", data.title.trim())
+            fd.append("bio", data.bio.trim())
+            fd.append("journey", data.journey.trim())
+            fd.append("currentWork", data.currentWork.trim())
+            fd.append("dob", data.dob.trim())
+            fd.append("location", data.location.trim())
+            fd.append("email", data.email.trim())
+            fd.append("phone", data.phone.trim())
+            fd.append("language", data.language.trim())
+            const file = data?.profileImg?.item?.(0)
+            if (file) {
+                fd.append("profileImg", file)
+            }
+            await aboutUpdate(fd).unwrap()
             toast.success(" About Updated ✅")
             reset()
         } catch (error) {
@@ -70,16 +120,15 @@ const About = () => {
             dob: format(data.dob, "yyy-MM-dd")
         })
     }
-    const handleClassess = (key: keyof ABOUT_REQUEST) => clsx({
+    const handleClassess = (key: keyof ProfileFormValues) => clsx({
         "form-control my-1": true,
         "is-invalid": errors[key],
         "is-valid": touchedFields[key] && !errors[key],
     })
+    const hasprofileImg = Boolean(data?.result?.profileImg)
     return <>
         <div className="container">
             <div className="row">
-
-
                 {
 
                     data && <div className="card mt-5">
@@ -152,12 +201,47 @@ const About = () => {
                                         <div className="invalid-feedback">{errors && errors.language?.message}</div>
                                     </div>
                                     <div>
-                                        <input className={handleClassess("profileImg")} type='file'  {...register("profileImg")} placeholder='profile Url' />
-                                        <div className="invalid-feedback">{errors && errors.profileImg?.message}</div>
+                                        {hasprofileImg && !showProfilePicInput ? (
+                                            <div className="d-flex flex-column gap-2">
+                                                <img src={data?.result?.profileImg}
+                                                    alt="Profile"
+                                                    className="img-thumbnail"
+                                                    style={{ width: 140, height: 140, objectFit: "cover" }}
+                                                />
+                                                <button
+                                                    className="btn btn-outline-primary btn-sm align-self-start"
+                                                    type="button"
+                                                    onClick={() => setShowProfilePicInput(true)}
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="d-flex flex-column gap-2">
+                                                <input
+                                                    className="form-control"
+                                                    id="profileImg"
+                                                    type="file"
+                                                    {...register("profileImg")}
+                                                />
+                                                {hasprofileImg ? (
+                                                    <button
+                                                        className="btn btn-outline-secondary btn-sm align-self-start"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowProfilePicInput(false)
+                                                            setValue("profileImg", undefined)
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                ) : null}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className='text-end'>
-                                        <button type='submit' className='btn btn-info '>Update About</button>
-                                    </div>
+                                    <button className="btn btn-primary" type="submit" disabled={isProfileUpdating}>
+                                        {isProfileUpdating ? "Updating..." : "Update Profile"}
+                                    </button>
                                 </form>
                             </div>
                         </div>

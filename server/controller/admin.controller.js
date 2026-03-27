@@ -4,10 +4,11 @@ const Experiece = require("../models/Experiece")
 const Project = require("../models/Project")
 const Skill = require("../models/Skill")
 const Statistics = require("../models/Statistics")
-const uploades = require("../utils/uploades")
+
 const cloud = require("./../utils/cloud")
 const { sendEmail } = require("../utils/email");
 const { contactTemplete } = require("../email-templets/contactTemplete");
+const { profileUpdate, resumeUpdate } = require("../utils/uploades")
 
 exports.CreateProject = async (req, res) => {
     try {
@@ -183,7 +184,7 @@ exports.CreateAbout = async (req, res) => {
 }
 exports.getAbout = async (req, res) => {
     try {
-        const result = await About.findOne().populate("_id  name email profilePic role ")
+        const result = await About.findOne()
         res.status(200).json({ message: "About get success", result })
     } catch (error) {
         res.status(401).json({ message: "unabel to get About" })
@@ -191,25 +192,41 @@ exports.getAbout = async (req, res) => {
 }
 exports.updateAbout = async (req, res) => {
     try {
-        const { aid } = req.params
-        uploades(req, res, async (err) => {
+        // profileUpdate(req, res, async err => {
+        //     if (err) {
+        //         console.log(err)
+        //         return res.status(500).json({ message: err.message })
+        //     }
+        //     const result = await About.find()
+        //     if (req.file) {
+
+        //         const { secure_url } = await cloud.uploader.upload(req.file.path)
+        //         await About.findByIdAndUpdate(result._id, { ...req.body, profileImg: secure_url })
+        //         //                                                          👆 from models/Profile.js
+        //         return res.status(200).json({ message: "profile update with image success" })
+        //     } else {
+        //         const result = await About.findOne()
+        //         await About.findByIdAndUpdate(result._id, req.body)
+        //         return res.status(200).json({ message: "profile update success" })
+        //     }
+        // })
+        resumeUpdate(req, res, async err => {
             if (err) {
-                console.log(err);
+                console.log(err)
                 return res.status(500).json({ message: err.message })
             }
-            if (!req.file) {
-                return res.status(400).json({ message: "NO file uploaded please select an image" })
+            const result = await About.findOne()
+            if (req.file) {
+                const { secure_url } = await cloud.uploader.upload(req.file.path)
+                await About.findByIdAndUpdate(result._id, { ...req.body, resume: secure_url })
+                //                                                          👆 from models/Profile.js
+                return res.status(200).json({ message: "resume update with image success" })
+            } else {
+                const result = await About.findOne()
+                await About.findByIdAndUpdate(result._id, req.body)
+                return res.status(200).json({ message: "resume update success" })
             }
-            const path = req.file.path
-            console.log(path);
-
-            const { secure_url } = await cloud.uploader.upload(path)
-            // await About.create()//secure_url-image url from cloudnary
-            await About.findByIdAndUpdate(aid, { ...req.body, profileImg: secure_url }, { runValidators: true })
-            res.status(201).json({ message: "about create success" })
         })
-
-        res.status(200).json({ message: "About update success" })
     } catch (error) {
         res.status(401).json({ message: "unabel to update About" })
     }

@@ -20,7 +20,8 @@ exports.seedAbout = async (req, res) => {
             bio: "I am Madhura Gulwelkar, a BCS student and Full-Stack Developer passionate about building scalable web applications. With expertise in React, Next.js, and TypeScript, I focus on creating clean, type-safe code and efficient backends using MongoDB and Express. I love turning complex problems into simple, beautiful digital experiences.",
             journey: "nckBSDCISGU",
             location: "Ch. Sambhajinagara",
-            profileImg: "theuijj"
+            profileImg: "",
+            addResume: "",
         })
 
 

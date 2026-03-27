@@ -193,12 +193,12 @@ export const adminApi = createApi({
                 },
                 invalidatesTags: ["about"]
             }),
-            updateAbout: builder.mutation<UPDATE_ABOUT_RESPONCE, UPDATE_ABOUT_REQUEST>({
-                query: userData => {
+            updateAbout: builder.mutation<void, FormData>({
+                query: profileData => {
                     return {
-                        url: "/update-about/" + userData._id,
+                        url: "/update-about",
                         method: "PUT",
-                        body: userData
+                        body: profileData
                     }
                 },
                 invalidatesTags: ["about"]

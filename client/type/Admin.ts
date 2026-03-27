@@ -120,7 +120,6 @@ type DELETE__SKILL_RESPONCE = {
 //STATISTICS
 
 type STAT_REQUEST = {
-
     expYear: string
     noOfProject: string
     tech: string
@@ -169,7 +168,8 @@ type ABOUT_REQUEST = {
     email: string
     phone: string
     language: string
-    profileImg: string
+    profileImg?: File
+    resume?: FileList
 
 }
 type ABOUT_RESPONS = {
@@ -187,6 +187,7 @@ type ABOUT_RESPONS = {
         phone: string
         language: string
         profileImg: File
+        resume?: FileList
     }
 }
 
@@ -202,7 +203,8 @@ type UPDATE_ABOUT_REQUEST = {
     email: string
     phone: string
     language: string
-    profileImg: string
+    profileImg?: File
+    resume?: File
 }
 
 type UPDATE_ABOUT_RESPONCE = {

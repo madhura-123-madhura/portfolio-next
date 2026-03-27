@@ -18,8 +18,13 @@ exports.createContact = async (req, res) => {
         const result = await Contact.create(req.body)
         if (result) {
             await sendEmail({
+                email: result.email,
+                subject: "Reply for contact",
+                message: contactTemplete({ name: result.fullName, message: "Thank you for contacting us" }),
+            })
+            await sendEmail({
                 email: process.env.EMAIL,
-                subject: "Reply form portfolio contact",
+                subject: "New Contact Recived",
                 message: contactTempleteGetReply({ name: result.fullName, message: result.message }),
             })
             console.log("email send success");
@@ -61,7 +66,7 @@ exports.sendReply = async (req, res) => {
 
 exports.getAllProject = async (req, res) => {
     try {
-        const result = await Project.find()
+        const result = await Project.findOne()
         res.status(200).json({ message: "project get success", result })
     } catch (error) {
         res.status(401).json({ message: "unabel to get project" })
@@ -105,7 +110,7 @@ exports.getExperience = async (req, res) => {
 
 exports.getStat = async (req, res) => {
     try {
-        const result = await Statistics.find()
+        const result = await Statistics.findOne()
         res.status(200).json({ message: "statistics get success", result })
     } catch (error) {
         res.status(401).json({ message: "unabel to get statistics" })

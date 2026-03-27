@@ -39,7 +39,7 @@ routes
     // About
     .post("/create-about", CreateAbout)
     .get("/get-about", getAbout)
-    .put("/update-about/:aid", updateAbout)
+    .put("/update-about", updateAbout)
     .delete("/delete-about/:aid", deleteAbout)
 
     //contact

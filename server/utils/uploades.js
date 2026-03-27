@@ -1,3 +1,6 @@
 const multer = require("multer")
 const path = require("path")
-module.exports = multer({ storage: multer.diskStorage({}) }).single("profileImg")
+const profileUpdate = multer({ storage: multer.diskStorage({}) }).single("profileImg")
+const resumeUpdate = multer({ storage: multer.diskStorage({}) }).single("resume")
+
+module.exports = { profileUpdate, resumeUpdate }

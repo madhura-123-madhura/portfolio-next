@@ -1,4 +1,11 @@
 
+type CONTACT_CREATE_REQUEST = {
+    fullName: string
+    mobile: string
+    email: string
+    message: string
+
+}
 type CONTACT_CREATE_RESPONCE = {
     message: string
     result: {
@@ -12,7 +19,14 @@ type CONTACT_CREATE_RESPONCE = {
 
 type PROJECT_GET_RESPONCE = {
     message: string
-    result: {}
+    result: {
+        title: string
+        desc: string
+        category: string
+        technologies: string
+        liveUrl: string
+        gitHubUrl: string
+    }
 }
 //SKILL
 
@@ -41,7 +55,8 @@ type ABOUT_GET_RESPONCE = {
         email: string
         phone: string
         language: string
-        profileImg: string
+        profileImg?: string
+        resume: string
     }
 }
 //STATISTICS
@@ -61,11 +76,12 @@ type STAT_GET_RESPONCE = {
 type EXP_GET_RESPONCE = {
     message: string
     result: {
+        _id: string
         Role: string
         company: string
         period: string
         desc: string
         risponsibility: string
-    }
+    }[]
 }
 

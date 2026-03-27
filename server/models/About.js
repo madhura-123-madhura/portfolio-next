@@ -12,4 +12,5 @@ module.exports = mongoose.model("about", new mongoose.Schema({
     phone: { type: String, required: true },
     language: { type: String, required: true },
     profileImg: { type: String, required: true },
+    resume: { type: String, required: true },
 }, { timestamps: true }))

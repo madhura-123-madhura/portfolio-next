@@ -15,8 +15,7 @@ const PublicNavbar = () => {
                         <Link className="nav-link" href="/user/about">About</Link>
                         <Link className="nav-link" href="/user/experience">Experience</Link>
                         <Link className="nav-link" href="/user/project">Project</Link>
-                        <Link className="nav-link" href="/user/skill">Skill</Link>
-                        <Link className="nav-link" href="/user/statistics">Statistics</Link>
+                        <Link className="nav-link" href="/user/contact">  <button className='btn btn-info btn-sm'>Contact</button></Link>
                     </div>
                 </div>
             </div>
